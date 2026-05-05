@@ -1,0 +1,9 @@
+FROM node@sha256:d415caac2f1f77b98caaf9415c5f807e14bc8d7bdea62561ea2fef4fbd08a73c
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates docker.io jq \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+ENTRYPOINT ["node", "benchmarks/automation/run-benchmark.mjs"]

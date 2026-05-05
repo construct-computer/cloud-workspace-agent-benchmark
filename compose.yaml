@@ -1,0 +1,88 @@
+services:
+  fixture:
+    image: node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f
+    working_dir: /workspace
+    environment:
+      CWAB_FIXTURE_PORT: "6789"
+      # Sibling per-attempt Docker containers are launched through the host
+      # Docker socket, so they need a host-reachable URL rather than the
+      # Compose service DNS name.
+      CWAB_FIXTURE_PUBLIC_URL: ${CWAB_FIXTURE_PUBLIC_URL:-http://host.docker.internal:6789}
+    volumes:
+      - ../..:/workspace:ro
+    command:
+      - node
+      - benchmarks/automation/fixtures/cwab-fixture-server.mjs
+    ports:
+      - "6789:6789"
+
+  cwab-runner:
+    build:
+      context: ../..
+      dockerfile: benchmarks/automation/Dockerfile.runner
+    working_dir: /workspace
+    environment:
+      # Required when the runner itself runs in Docker and launches sibling
+      # per-attempt containers through the host Docker socket.
+      CWAB_HOST_REPO: ${CWAB_HOST_REPO:-${PWD}}
+      CONSTRUCT_BENCHMARK_URL: ${CONSTRUCT_BENCHMARK_URL:-}
+      CONSTRUCT_BENCHMARK_TOKEN: ${CONSTRUCT_BENCHMARK_TOKEN:-}
+      CONSTRUCT_BENCHMARK_PROVIDER: ${CONSTRUCT_BENCHMARK_PROVIDER:-}
+      CONSTRUCT_BENCHMARK_MODEL: ${CONSTRUCT_BENCHMARK_MODEL:-}
+      CONSTRUCT_BENCHMARK_CONFIGURE_BYOK: ${CONSTRUCT_BENCHMARK_CONFIGURE_BYOK:-}
+      CWAB_OPENCLAW_IMAGE: ${CWAB_OPENCLAW_IMAGE:-}
+      CWAB_HERMES_IMAGE: ${CWAB_HERMES_IMAGE:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      CWAB_OPENROUTER_API_KEY: ${CWAB_OPENROUTER_API_KEY:-}
+      NOUS_API_KEY: ${NOUS_API_KEY:-}
+      CWAB_MODEL_ID: ${CWAB_MODEL_ID:-}
+      CWAB_OPENROUTER_MODEL: ${CWAB_OPENROUTER_MODEL:-}
+      CWAB_OPENCLAW_MODEL: ${CWAB_OPENCLAW_MODEL:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-}
+      MODEL_ID: ${MODEL_ID:-}
+      OPENCLAW_MODEL: ${OPENCLAW_MODEL:-}
+      HERMES_PROVIDER: ${HERMES_PROVIDER:-}
+      HERMES_MODEL: ${HERMES_MODEL:-}
+      HERMES_INFERENCE_PROVIDER: ${HERMES_INFERENCE_PROVIDER:-}
+      HERMES_INFERENCE_MODEL: ${HERMES_INFERENCE_MODEL:-}
+      HERMES_TOOLSETS: ${HERMES_TOOLSETS:-web,terminal,file}
+      CWAB_AGENT_PROVIDER: ${CWAB_AGENT_PROVIDER:-}
+      CWAB_AGENT_MODEL: ${CWAB_AGENT_MODEL:-}
+      CWAB_SEND_OPENROUTER_API_KEY_TO_HTTP: ${CWAB_SEND_OPENROUTER_API_KEY_TO_HTTP:-}
+      N8N_AI_AGENT_WEBHOOK_URL: ${N8N_AI_AGENT_WEBHOOK_URL:-}
+      N8N_API_KEY: ${N8N_API_KEY:-}
+      CWAB_FIXTURE_URL: ${CWAB_FIXTURE_URL:-http://fixture:6789}
+    volumes:
+      - ../..:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - --systems
+      - benchmarks/automation/systems.docker.example.json
+      - --fixture-url
+      - http://fixture:6789
+      - --task
+      - cwab-001
+      - --runs
+      - "1"
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n@sha256:6f64b98eb9118c27403a3dc9b36a187690dd47a5245bcb70a8ce137b0a008ac1
+    profiles:
+      - n8n
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_SECURE_COOKIE: "false"
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      N8N_TEMPLATES_ENABLED: "false"
+      GENERIC_TIMEZONE: ${GENERIC_TIMEZONE:-UTC}
+      TZ: ${GENERIC_TIMEZONE:-UTC}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./results:/files/cwab-results
+
+volumes:
+  n8n_data:

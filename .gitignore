@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Environment files (contain secrets)
+*.env
+!.env.example
+!benchmark.env.example
+
+# Generated files
+.cwab-images.env
+
+# Results (generated per run)
+results/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Reports
+latest-report.html
+latest-comparison.md

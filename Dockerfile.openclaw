@@ -1,0 +1,27 @@
+FROM node@sha256:d415caac2f1f77b98caaf9415c5f807e14bc8d7bdea62561ea2fef4fbd08a73c
+
+ARG OPENCLAW_VERSION=2026.4.15
+ARG OPENCLAW_INSTALLER_URL=https://openclaw.ai/install.sh
+ARG OPENCLAW_INSTALLER_SHA256=
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates curl git \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL --proto '=https' --tlsv1.2 "${OPENCLAW_INSTALLER_URL}" -o /tmp/openclaw-install.sh \
+  && if [ -n "${OPENCLAW_INSTALLER_SHA256}" ]; then \
+    echo "${OPENCLAW_INSTALLER_SHA256}  /tmp/openclaw-install.sh" | sha256sum -c -; \
+  fi \
+  && OPENCLAW_NO_PROMPT=1 OPENCLAW_NO_ONBOARD=1 OPENCLAW_INSTALL_METHOD=npm OPENCLAW_VERBOSE=1 \
+    /bin/bash /tmp/openclaw-install.sh \
+      --install-method npm \
+      --version "${OPENCLAW_VERSION}" \
+      --no-prompt \
+      --no-onboard \
+      --verbose \
+  && rm -f /tmp/openclaw-install.sh \
+  && npm cache clean --force
+
+RUN openclaw --version
+
+WORKDIR /workspace

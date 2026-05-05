@@ -1,0 +1,19 @@
+FROM python@sha256:6d85378d88a19cd4d76079817532d62232be95757cb45945a99fec8e8084b9c2
+
+ARG HERMES_REF=v2026.4.30
+ARG HERMES_INSTALLER_URL=https://hermes-agent.nousresearch.com/install.sh
+ARG HERMES_INSTALLER_SHA256=
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates curl git build-essential nodejs \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL --proto '=https' --tlsv1.2 "${HERMES_INSTALLER_URL}" -o /tmp/hermes-install.sh \
+  && if [ -n "${HERMES_INSTALLER_SHA256}" ]; then \
+    echo "${HERMES_INSTALLER_SHA256}  /tmp/hermes-install.sh" | sha256sum -c -; \
+  fi \
+  && /bin/bash /tmp/hermes-install.sh --branch "${HERMES_REF}" --skip-setup \
+  && rm -f /tmp/hermes-install.sh \
+  && python -m pip cache purge
+
+WORKDIR /workspace

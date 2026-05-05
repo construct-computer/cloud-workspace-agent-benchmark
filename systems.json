@@ -1,0 +1,307 @@
+{
+  "defaults": {
+    "runsPerTask": 1,
+    "timeoutMs": 1200000,
+    "outputDir": "benchmarks/automation/results"
+  },
+  "systems": [
+    {
+      "id": "fixture_demo_agent",
+      "label": "Fixture Demo Agent",
+      "adapter": "docker",
+      "enabled": true,
+      "stdin": "json",
+      "container": {
+        "image": "node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f",
+        "network": "bridge",
+        "workdir": "/workspace",
+        "command": [
+          "node",
+          "benchmarks/automation/wrappers/fixture-demo-agent-wrapper.mjs"
+        ]
+      },
+      "validator": {
+        "adapter": "docker",
+        "stdin": "json",
+        "container": {
+          "image": "node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f",
+          "network": "bridge",
+          "workdir": "/workspace",
+          "command": [
+            "node",
+            "benchmarks/automation/wrappers/fixture-validator-wrapper.mjs"
+          ]
+        }
+      }
+    },
+    {
+      "id": "container_smoke",
+      "label": "Container Smoke Test",
+      "adapter": "docker",
+      "enabled": true,
+      "stdin": "json",
+      "container": {
+        "image": "node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f",
+        "network": "none",
+        "workdir": "/workspace",
+        "command": [
+          "node",
+          "benchmarks/automation/wrappers/smoke-wrapper.mjs"
+        ]
+      }
+    },
+    {
+      "id": "construct",
+      "label": "Construct",
+      "adapter": "docker",
+      "enabled": false,
+      "stdin": "json",
+      "requiredEnv": [
+        "CONSTRUCT_BENCHMARK_URL"
+      ],
+      "env": {
+        "CONSTRUCT_BENCHMARK_URL": "${CONSTRUCT_BENCHMARK_URL}",
+        "CONSTRUCT_BENCHMARK_TOKEN": "${CONSTRUCT_BENCHMARK_TOKEN}",
+        "CONSTRUCT_BENCHMARK_PROVIDER": "${CONSTRUCT_BENCHMARK_PROVIDER}",
+        "CONSTRUCT_BENCHMARK_MODEL": "${CONSTRUCT_BENCHMARK_MODEL}",
+        "CONSTRUCT_BENCHMARK_CONFIGURE_BYOK": "${CONSTRUCT_BENCHMARK_CONFIGURE_BYOK}",
+        "CONSTRUCT_BENCHMARK_TIMEOUT_MS": "${CONSTRUCT_BENCHMARK_TIMEOUT_MS}",
+        "CONSTRUCT_BENCHMARK_POLL_MS": "${CONSTRUCT_BENCHMARK_POLL_MS}",
+        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+        "CWAB_OPENROUTER_API_KEY": "${CWAB_OPENROUTER_API_KEY}",
+        "CWAB_MODEL_ID": "${CWAB_MODEL_ID}",
+        "CWAB_OPENROUTER_MODEL": "${CWAB_OPENROUTER_MODEL}",
+        "OPENROUTER_MODEL": "${OPENROUTER_MODEL}",
+        "MODEL_ID": "${MODEL_ID}",
+        "CWAB_SEND_OPENROUTER_API_KEY_TO_HTTP": "${CWAB_SEND_OPENROUTER_API_KEY_TO_HTTP}",
+        "CWAB_AUTH_HEADER": "Authorization",
+        "CWAB_AUTH_SCHEME": "Bearer",
+        "CWAB_OR_INPUT_PRICE_PER_1M": "${CWAB_OR_INPUT_PRICE_PER_1M}",
+        "CWAB_OR_OUTPUT_PRICE_PER_1M": "${CWAB_OR_OUTPUT_PRICE_PER_1M}",
+        "CWAB_OR_CACHE_WRITE_PRICE_PER_1M": "${CWAB_OR_CACHE_WRITE_PRICE_PER_1M}",
+        "CWAB_OR_CACHE_READ_PRICE_PER_1M": "${CWAB_OR_CACHE_READ_PRICE_PER_1M}"
+      },
+      "container": {
+        "image": "node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f",
+        "network": "bridge",
+        "workdir": "/workspace",
+        "command": [
+          "node",
+          "benchmarks/automation/wrappers/construct-http-wrapper.mjs"
+        ]
+      },
+      "validator": {
+        "adapter": "docker",
+        "stdin": "json",
+        "container": {
+          "image": "node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f",
+          "network": "bridge",
+          "workdir": "/workspace",
+          "command": [
+            "node",
+            "benchmarks/automation/wrappers/fixture-validator-wrapper.mjs"
+          ]
+        }
+      }
+    },
+    {
+      "id": "openclaw",
+      "label": "OpenClaw",
+      "adapter": "docker",
+      "enabled": false,
+      "stdin": "json",
+      "requiredEnv": [
+        "CWAB_OPENCLAW_IMAGE"
+      ],
+      "requiredAnyEnv": [
+        [
+          "OPENROUTER_API_KEY",
+          "OPENAI_API_KEY",
+          "ANTHROPIC_API_KEY"
+        ]
+      ],
+      "env": {
+        "HOME": "/cwab/attempt/home",
+        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "OPENCLAW_MODEL": "${OPENCLAW_MODEL}",
+        "CWAB_OPENCLAW_MODEL": "${CWAB_OPENCLAW_MODEL}",
+        "CWAB_MODEL_ID": "${CWAB_MODEL_ID}",
+        "OPENROUTER_MODEL": "${OPENROUTER_MODEL}",
+        "MODEL_ID": "${MODEL_ID}",
+        "OPENCLAW_TIMEOUT_SECONDS": "1200",
+        "CWAB_OR_INPUT_PRICE_PER_1M": "${CWAB_OR_INPUT_PRICE_PER_1M}",
+        "CWAB_OR_OUTPUT_PRICE_PER_1M": "${CWAB_OR_OUTPUT_PRICE_PER_1M}",
+        "CWAB_OR_CACHE_WRITE_PRICE_PER_1M": "${CWAB_OR_CACHE_WRITE_PRICE_PER_1M}",
+        "CWAB_OR_CACHE_READ_PRICE_PER_1M": "${CWAB_OR_CACHE_READ_PRICE_PER_1M}",
+        "CWAB_CLI_SETUP_COMMANDS_JSON": "[[\"/bin/sh\",\"-lc\",\"MODEL=\\\"$OPENCLAW_MODEL\\\"; if [ -z \\\"$MODEL\\\" ]; then MODEL=\\\"$CWAB_OPENCLAW_MODEL\\\"; fi; if [ -z \\\"$MODEL\\\" ]; then MODEL=\\\"$CWAB_MODEL_ID\\\"; fi; if [ -z \\\"$MODEL\\\" ]; then MODEL=\\\"$OPENROUTER_MODEL\\\"; fi; if [ -z \\\"$MODEL\\\" ]; then MODEL=\\\"$MODEL_ID\\\"; fi; if [ -n \\\"$MODEL\\\" ]; then case \\\"$MODEL\\\" in openrouter/*) ;; */*) MODEL=\\\"openrouter/$MODEL\\\" ;; esac; openclaw --profile cwab-__CWAB_RUN_ID__ models set \\\"$MODEL\\\"; fi\"]]",
+        "CWAB_CLI_COMMAND_JSON": "[\"/bin/sh\",\"-lc\",\"exec openclaw --profile cwab-__CWAB_RUN_ID__ agent --session-id __CWAB_RUN_ID__ --local --json --timeout \\\"${OPENCLAW_TIMEOUT_SECONDS:-900}\\\" --message \\\"$(cat __CWAB_PROMPT_FILE__)\\\"\"]"
+      },
+      "container": {
+        "image": "${CWAB_OPENCLAW_IMAGE}",
+        "network": "bridge",
+        "workdir": "/workspace",
+        "command": [
+          "node",
+          "benchmarks/automation/wrappers/generic-cli-agent-wrapper.mjs"
+        ]
+      },
+      "validator": {
+        "adapter": "docker",
+        "stdin": "json",
+        "container": {
+          "image": "node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f",
+          "network": "bridge",
+          "workdir": "/workspace",
+          "command": [
+            "node",
+            "benchmarks/automation/wrappers/fixture-validator-wrapper.mjs"
+          ]
+        }
+      }
+    },
+    {
+      "id": "hermes",
+      "label": "Hermes Agent",
+      "adapter": "docker",
+      "enabled": false,
+      "stdin": "json",
+      "requiredEnv": [
+        "CWAB_HERMES_IMAGE"
+      ],
+      "requiredAnyEnv": [
+        [
+          "NOUS_API_KEY",
+          "OPENROUTER_API_KEY",
+          "OPENAI_API_KEY",
+          "ANTHROPIC_API_KEY"
+        ]
+      ],
+      "env": {
+        "HOME": "/cwab/attempt/home",
+        "NOUS_API_KEY": "${NOUS_API_KEY}",
+        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "HERMES_PROVIDER": "${HERMES_PROVIDER}",
+        "HERMES_MODEL": "${HERMES_MODEL}",
+        "HERMES_INFERENCE_PROVIDER": "${HERMES_INFERENCE_PROVIDER}",
+        "HERMES_INFERENCE_MODEL": "${HERMES_INFERENCE_MODEL}",
+        "CWAB_MODEL_ID": "${CWAB_MODEL_ID}",
+        "CWAB_OPENROUTER_MODEL": "${CWAB_OPENROUTER_MODEL}",
+        "OPENROUTER_MODEL": "${OPENROUTER_MODEL}",
+        "MODEL_ID": "${MODEL_ID}",
+        "HERMES_TOOLSETS": "${HERMES_TOOLSETS}",
+        "HERMES_MAX_TURNS": "90",
+        "CWAB_OR_INPUT_PRICE_PER_1M": "${CWAB_OR_INPUT_PRICE_PER_1M}",
+        "CWAB_OR_OUTPUT_PRICE_PER_1M": "${CWAB_OR_OUTPUT_PRICE_PER_1M}",
+        "CWAB_OR_CACHE_WRITE_PRICE_PER_1M": "${CWAB_OR_CACHE_WRITE_PRICE_PER_1M}",
+        "CWAB_OR_CACHE_READ_PRICE_PER_1M": "${CWAB_OR_CACHE_READ_PRICE_PER_1M}",
+        "CWAB_CLI_COMMAND_JSON": "[\"/bin/sh\",\"-lc\",\"PROVIDER=\\\"$HERMES_PROVIDER\\\"; if [ -z \\\"$PROVIDER\\\" ]; then PROVIDER=\\\"$HERMES_INFERENCE_PROVIDER\\\"; fi; if [ -z \\\"$PROVIDER\\\" ]; then PROVIDER=\\\"openrouter\\\"; fi; MODEL=\\\"$HERMES_MODEL\\\"; if [ -z \\\"$MODEL\\\" ]; then MODEL=\\\"$HERMES_INFERENCE_MODEL\\\"; fi; if [ -z \\\"$MODEL\\\" ]; then MODEL=\\\"$CWAB_OPENROUTER_MODEL\\\"; fi; if [ -z \\\"$MODEL\\\" ]; then MODEL=\\\"$CWAB_MODEL_ID\\\"; fi; if [ -z \\\"$MODEL\\\" ]; then MODEL=\\\"$OPENROUTER_MODEL\\\"; fi; if [ -z \\\"$MODEL\\\" ]; then MODEL=\\\"$MODEL_ID\\\"; fi; MODEL=\\\"${MODEL#openrouter/}\\\"; exec hermes chat -Q --ignore-user-config --ignore-rules --accept-hooks --yolo --source cwab --max-turns \\\"${HERMES_MAX_TURNS:-60}\\\" --toolsets \\\"${HERMES_TOOLSETS:-web,terminal,file}\\\" ${PROVIDER:+--provider \\\"$PROVIDER\\\"} ${MODEL:+--model \\\"$MODEL\\\"} -q \\\"$(cat __CWAB_PROMPT_FILE__)\\\"\"]"
+      },
+      "container": {
+        "image": "${CWAB_HERMES_IMAGE}",
+        "network": "bridge",
+        "workdir": "/workspace",
+        "command": [
+          "node",
+          "benchmarks/automation/wrappers/generic-cli-agent-wrapper.mjs"
+        ]
+      },
+      "validator": {
+        "adapter": "docker",
+        "stdin": "json",
+        "container": {
+          "image": "node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f",
+          "network": "bridge",
+          "workdir": "/workspace",
+          "command": [
+            "node",
+            "benchmarks/automation/wrappers/fixture-validator-wrapper.mjs"
+          ]
+        }
+      }
+    },
+    {
+      "id": "n8n_ai_agent",
+      "label": "n8n AI Agent",
+      "adapter": "docker",
+      "enabled": false,
+      "stdin": "json",
+      "requiredEnv": [
+        "N8N_AI_AGENT_WEBHOOK_URL"
+      ],
+      "env": {
+        "CWAB_AGENT_ENDPOINT": "${N8N_AI_AGENT_WEBHOOK_URL}",
+        "CWAB_AGENT_PROVIDER": "${CWAB_AGENT_PROVIDER}",
+        "CWAB_AGENT_MODEL": "${CWAB_AGENT_MODEL}",
+        "CWAB_MODEL_ID": "${CWAB_MODEL_ID}",
+        "CWAB_OPENROUTER_MODEL": "${CWAB_OPENROUTER_MODEL}",
+        "OPENROUTER_MODEL": "${OPENROUTER_MODEL}",
+        "MODEL_ID": "${MODEL_ID}",
+        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+        "CWAB_OPENROUTER_API_KEY": "${CWAB_OPENROUTER_API_KEY}",
+        "CWAB_SEND_OPENROUTER_API_KEY_TO_HTTP": "${CWAB_SEND_OPENROUTER_API_KEY_TO_HTTP}",
+        "CWAB_AUTH_TOKEN": "${N8N_API_KEY}",
+        "CWAB_AUTH_HEADER": "X-N8N-API-KEY",
+        "CWAB_AUTH_SCHEME": ""
+      },
+      "container": {
+        "image": "node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f",
+        "network": "bridge",
+        "workdir": "/workspace",
+        "command": [
+          "node",
+          "benchmarks/automation/wrappers/generic-http-agent-wrapper.mjs"
+        ]
+      },
+      "validator": {
+        "adapter": "docker",
+        "stdin": "json",
+        "container": {
+          "image": "node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f",
+          "network": "bridge",
+          "workdir": "/workspace",
+          "command": [
+            "node",
+            "benchmarks/automation/wrappers/fixture-validator-wrapper.mjs"
+          ]
+        }
+      }
+    },
+    {
+      "id": "n8n_built_workflow",
+      "label": "n8n Built Workflow",
+      "adapter": "docker",
+      "enabled": false,
+      "stdin": "json",
+      "env": {
+        "N8N_OPERATOR_SETUP_SECONDS": "${N8N_OPERATOR_SETUP_SECONDS}"
+      },
+      "container": {
+        "image": "docker.n8n.io/n8nio/n8n@sha256:6f64b98eb9118c27403a3dc9b36a187690dd47a5245bcb70a8ce137b0a008ac1",
+        "network": "bridge",
+        "user": "root",
+        "entrypoint": "node",
+        "workdir": "/workspace",
+        "command": [
+          "benchmarks/automation/wrappers/n8n-built-workflow-wrapper.mjs"
+        ]
+      },
+      "validator": {
+        "adapter": "docker",
+        "stdin": "json",
+        "container": {
+          "image": "node@sha256:8ea2348b068a9544dae7317b4f3aafcdc032df1647bb7d768a05a5cad1a7683f",
+          "network": "bridge",
+          "workdir": "/workspace",
+          "command": [
+            "node",
+            "benchmarks/automation/wrappers/fixture-validator-wrapper.mjs"
+          ]
+        }
+      }
+    }
+  ]
+}
